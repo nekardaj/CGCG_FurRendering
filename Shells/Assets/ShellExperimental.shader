@@ -5,7 +5,7 @@ SOME USEFULL LINKS:
 	https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Light_Attenuation
 */
 
-Shader "Custom/ShellTexturing" {
+Shader "Custom/ShellExperimental" {
 	SubShader {
 		Pass {
 			Tags {
@@ -176,7 +176,7 @@ Shader "Custom/ShellTexturing" {
 				// Put it all together
 				// TODO: take light color and intensity into account
 				// TODO: also react to point and spot lights
-                return float4(_LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0);
+                return float4(_ShellColor * halfDot * ambientOcclusion, 1.0);
 			}
 
 			ENDCG

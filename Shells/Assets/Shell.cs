@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class Shell : MonoBehaviour
 {
+    [SerializeField] private string _materialPath = "Materials/FurMaterial";
+
+    [Header("Parameters")]
+
     [Range(1, 256)] public int shellCount = 16;
 
     [Range(0.0f, 1.0f)] public float shellLength = 0.15f;
@@ -71,7 +75,7 @@ public class Shell : MonoBehaviour
 
     private void SetMaterial()
     {
-        shellMaterial = Resources.Load<Material>("Materials/FurMaterial");
+        shellMaterial = Resources.Load<Material>(_materialPath);
         GetComponent<Renderer>().material = shellMaterial;
     }
 

@@ -475,7 +475,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &1253010279
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -556,7 +556,7 @@ Transform:
   m_GameObject: {fileID: 1253010278}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.098, z: 0}
+  m_LocalPosition: {x: 0, y: 2.098, z: 10.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -621,10 +621,10 @@ MonoBehaviour:
   shellCount: 64
   shellLength: 0.3
   distanceAttenuation: 1
-  density: 200
+  density: 2000
   noiseMin: 0.75
   noiseMax: 1
-  thickness: 6
+  thickness: 3
   curvature: 2
   displacementStrength: 0.1
   shellColor: {r: 1, g: 0, b: 0, a: 1}

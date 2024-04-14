@@ -12,13 +12,13 @@ Shader "Custom/ShellTexturing" {
 				"LightMode" = "ForwardBase"
 			}
 			// Backface culling turned off as we can see through the fur
-            Cull Off
+			Cull Off
 
 			CGPROGRAM
 
 			// Unity built in graphics functions
 			#include "UnityPBSLighting.cginc"
-            #include "AutoLight.cginc"
+			#include "AutoLight.cginc"
 
 			#pragma multi_compile_fwdbase
 
@@ -31,15 +31,16 @@ Shader "Custom/ShellTexturing" {
 			struct VertexIn {
 				float4 vertexPos : POSITION;
 				float3 normal : NORMAL;
-                float2 uv : TEXCOORD0;
+				float2 uv : TEXCOORD0;
 			};
-			
+
 			// Struct for the output of the vertex shader, passed to the fragment shader
 			struct VertOutFracIn {
 				float4 pos : SV_POSITION;
-                float2 uv : TEXCOORD0;
-				float3 normal : TEXCOORD1;
-				float3 worldPos : TEXCOORD2;
+				float2 uv : TEXCOORD0;
+				SHADOW_COORDS(1)
+				float3 normal : TEXCOORD2;
+				float3 worldPos : TEXCOORD3;
 			};
 
 			// constant for hash function
@@ -84,39 +85,41 @@ Shader "Custom/ShellTexturing" {
 			// hash function source: https://www.shadertoy.com/view/MdcfDj
 			float hash12(uint2 q)
 			{
-				q *= uint2(M1, M2); 
+				q *= uint2(M1, M2);
 				uint n = (q.x ^ q.y) * M1;
-				return float(n) * (1.0/float(0xffffffffU));
+				return float(n) * (1.0 / float(0xffffffffU));
 			}
 
 			// In the vertex shader we extrude the shells
 			VertOutFracIn vertex_shader(VertexIn v) {
-			// define output
-			VertOutFracIn frag;
+				// define output
+				VertOutFracIn frag;
 
-			// apply shell distance attenuation
-			float shellHeight = (float)_ShellIndex / (float)_ShellCount;
-			shellHeight = pow(shellHeight, _ShellDistanceAttenuation);
+				// apply shell distance attenuation
+				float shellHeight = (float)_ShellIndex / (float)_ShellCount;
+				shellHeight = pow(shellHeight, _ShellDistanceAttenuation);
 
-			// Extrude the shells based on normal, shell height and length
-			v.vertexPos.xyz += v.normal.xyz * _TotalShellLength * shellHeight;
+				// Extrude the shells based on normal, shell height and length
+				v.vertexPos.xyz += v.normal.xyz * _TotalShellLength * shellHeight;
 
-			// set the output values
-            frag.normal = normalize(UnityObjectToWorldNormal(v.normal));
-				
+				// set the output values
+				frag.normal = normalize(UnityObjectToWorldNormal(v.normal));
 
-			// Displace shells based on the cpu input
-				// curvature and displacement strength used as tuning parameters
-				// highger curvature -> more displacement
-				// due to k, only the tips of the hair are be displaced
-			float k = pow(shellHeight, _Curvature);
-			v.vertexPos.xyz += _ShellDisplacementDir * k * _DisplacementStrength;
 
-            frag.worldPos = mul(unity_ObjectToWorld, v.vertexPos);
-            frag.pos = UnityObjectToClipPos(v.vertexPos);
-            frag.uv = v.uv;
+				// Displace shells based on the cpu input
+					// curvature and displacement strength used as tuning parameters
+					// highger curvature -> more displacement
+					// due to k, only the tips of the hair are be displaced
+				float k = pow(shellHeight, _Curvature);
+				v.vertexPos.xyz += _ShellDisplacementDir * k * _DisplacementStrength;
 
-			return frag;
+				frag.worldPos = mul(unity_ObjectToWorld, v.vertexPos);
+				frag.pos = UnityObjectToClipPos(v.vertexPos);
+				frag.uv = v.uv;
+
+				TRANSFER_SHADOW(frag)
+
+				return frag;
 			}
 
 			// In the fragment shader we discard fragments that do not belong to any strand of hair/fur/grass
@@ -139,32 +142,54 @@ Shader "Custom/ShellTexturing" {
 				// Introduce length variance to the strands
 
 				// We use the newUV as a seed for determining the strand length
-                uint2 tid = newUV;
+				uint2 tid = newUV;
 				// use the hash function to generate a random number between 0, 1 based on the uvs
 
 				float random = lerp(_MinNormalizedLength, _MaxNormalizedLength, hash12(newUV));
-				
+
 				// Normalized shell height
-                float height = (float)_ShellIndex / (float)_ShellCount;
+				float height = (float)_ShellIndex / (float)_ShellCount;
 				// if the distance from the center is greater than thickness, we discard it, the thickness decreases with height
 				int isOutside = (localDistanceFromCenter) > (_Thickness * (random - height));
-				
+
 				// we can only discard the fragment if we are not in the lowest shell
 				if (isOutside && _ShellIndex > 0) discard;
-				
+
 				// Now we know that the pixel is not discarded
 				// Lets color it
+
 				// ----- LIGHTING -----
 
 				// We use the non physically based model - Valve's half lambert
 				// _WorldSpaceLightPos0 is the direction of the main light in world space
-				
+
+				float3 normalDirection = normalize(frag.normal);
+				float3 viewDirection = normalize(
+					_WorldSpaceCameraPos - frag.worldPos.xyz);
+				float3 lightDirection;
+				float attenuation;
+
+				if (0.0 == _WorldSpaceLightPos0.w) // directional light?
+				{
+					attenuation = 1.0; // no attenuation
+					lightDirection =
+						normalize(_WorldSpaceLightPos0.xyz);
+				}
+				else // point or spot light
+				{
+					float3 vertexToLightSource =
+						_WorldSpaceLightPos0.xyz - frag.worldPos.xyz;
+					float distance = length(vertexToLightSource);
+					attenuation = 1.0 / distance; // linear attenuation 
+					lightDirection = normalize(vertexToLightSource);
+				}
+
 				// Perform the half lambert shading
 				// take the dot product of the normal and the light direction
 				// clamp it to 0, 1
 				// convert it to 0.5, 1
 				// square it
-				float halfDot = DotClamped(frag.normal, _WorldSpaceLightPos0);
+				float halfDot = DotClamped(frag.normal, lightDirection);
 				halfDot = halfDot * 0.5f + 0.5f;
 				halfDot = halfDot * halfDot;
 
@@ -178,15 +203,17 @@ Shader "Custom/ShellTexturing" {
 				// then clamp it to 0, 1
 				ambientOcclusion = saturate(ambientOcclusion);
 
+				// compute shadow attenuation (1.0 = fully lit, 0.0 = fully shadowed)
+				fixed shadow = SHADOW_ATTENUATION(frag);
+
 				// Put it all together
 				// TODO: take light color and intensity into account
 				// TODO: also react to point and spot lights
-                return float4(_LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0);
+				return float4(shadow * attenuation * _LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0);
 			}
 
 			ENDCG
-		}
-
+		} // end of ForwardBase pass
 
 		// shadow caster rendering pass, implemented manually
 		// using macros from UnityCG.cginc
@@ -216,6 +243,6 @@ Shader "Custom/ShellTexturing" {
 				SHADOW_CASTER_FRAGMENT(i)
 			}
 			ENDCG
-		}
+		} // end of ShadowCaster pass
 	}
 }

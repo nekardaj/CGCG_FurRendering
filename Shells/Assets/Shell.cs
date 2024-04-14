@@ -86,6 +86,9 @@ public class Shell : MonoBehaviour
 
     private void GenerateShells()
     {
+        // TODO: generated shells might have Cast Shadows to off for performance boost
+        // ^^ discuss with Vlada when he is done with shader experiments
+
         shells = new GameObject[shellCount];
         shellsCapacity = shellCount;
 

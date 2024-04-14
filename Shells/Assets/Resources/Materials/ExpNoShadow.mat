@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ExperimentalMultiPass
-  m_Shader: {fileID: 4800000, guid: ad3a5b39a9e9dc343bfe95bd6e79c27e, type: 3}
+  m_Name: ExpNoShadow
+  m_Shader: {fileID: 4800000, guid: 8d14a53f06117464b983246f96a46d84, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []

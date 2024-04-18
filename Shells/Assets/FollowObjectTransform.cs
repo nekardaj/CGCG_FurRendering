@@ -11,6 +11,11 @@ public class FollowObjectTransform : MonoBehaviour
 
     // TODO: does not react to when Target id being (de)activated
 
+    private void Start()
+    {
+        GetComponent<MeshRenderer>().enabled = true;
+    }
+
     private void Update()
     {
         UpdateTransform();
@@ -27,7 +32,7 @@ public class FollowObjectTransform : MonoBehaviour
         {
             transform.position = Target.position;
             transform.rotation = Target.rotation;
-            transform.localScale = Target.localScale;
+            transform.localScale = Target.localScale * _scaleMultiplier;
         }
     }
 }

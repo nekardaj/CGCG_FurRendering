@@ -232,7 +232,7 @@ Shader "Custom/ShellExperimentalNoShadow" {
 			//#pragma multi_compile_fwdbase
 			//#pragma multi_compile_fwdadd
 			#pragma multi_compile_fwdadd_fullshadows
-			#pragma multi_compile DIRECTIONAL POINT SPOT
+			//#pragma multi_compile DIRECTIONAL POINT SPOT
 			//#pragma multi_compile_fwdadd_fullshadows fullforwardshadows
 			//#pragma multi_compile_fwdadd fullforwardshadows
 			//#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _ADDITIONAL_LIGHTS_SHADOWS
@@ -244,7 +244,7 @@ Shader "Custom/ShellExperimentalNoShadow" {
 
 			// The input struct of the vertex shader
 			struct VertexIn {
-				float4 vertexPos : POSITION;
+				float4 vertex : POSITION;
 				float3 normal : NORMAL;
 				float2 uv : TEXCOORD0;
 			};
@@ -317,8 +317,8 @@ Shader "Custom/ShellExperimentalNoShadow" {
 				shellHeight = pow(shellHeight, _ShellDistanceAttenuation);
 
 				// Extrude the shells based on normal, shell height and length
-				v.vertexPos.xyz += v.normal.xyz * _TotalShellLength * shellHeight;
-				frag.vertex = v.vertexPos;
+				v.vertex.xyz += v.normal.xyz * _TotalShellLength * shellHeight;
+				frag.vertex = v.vertex;
 
 				// set the output values
 				frag.normal = normalize(UnityObjectToWorldNormal(v.normal));
@@ -329,10 +329,10 @@ Shader "Custom/ShellExperimentalNoShadow" {
 					// highger curvature -> more displacement
 					// due to k, only the tips of the hair are be displaced
 				float k = pow(shellHeight, _Curvature);
-				v.vertexPos.xyz += _ShellDisplacementDir * k * _DisplacementStrength;
+				v.vertex.xyz += _ShellDisplacementDir * k * _DisplacementStrength;
 
-				frag.worldPos = mul(unity_ObjectToWorld, v.vertexPos);
-				frag.pos = UnityObjectToClipPos(v.vertexPos);
+				frag.worldPos = mul(unity_ObjectToWorld, v.vertex);
+				frag.pos = UnityObjectToClipPos(v.vertex);
 				frag.uv = v.uv;
 
 				TRANSFER_SHADOW(frag)

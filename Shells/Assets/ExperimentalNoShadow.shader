@@ -198,14 +198,11 @@ Shader "Custom/ShellExperimentalNoShadow" {
 				ambientOcclusion = saturate(ambientOcclusion);
 
 				// compute shadow attenuation (1.0 = fully lit, 0.0 = fully shadowed)
-				fixed shadow = SHADOW_ATTENUATION(frag);
+				float shadow = SHADOW_ATTENUATION(frag);
 
-				//if (shadow < 0.5) return (1.0, 1.0, 1.0, 1.0);
-
-				// Put it all together
-				// TODO: take light color and intensity into account
-				// TODO: also react to point and spot lights
-				return float4(shadow * attenuation * _LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0);
+				// Put it all together and include ambient light
+				//return float4(shadow * attenuation * _LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0);
+				return saturate(float4(shadow * attenuation * _LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0) + float4(unity_IndirectSpecColor.xyz * _ShellColor * halfDot * ambientOcclusion, 1.0));
 			}
 
 			ENDCG
@@ -220,7 +217,7 @@ Shader "Custom/ShellExperimentalNoShadow" {
 			Blend One One
 			// Backface culling turned off as we can see through the fur
 			Cull Off
-			// ZWrite Off // TODO: Enable this?
+			ZWrite Off
 			// ZTest LEqual
 
 			CGPROGRAM
@@ -427,10 +424,9 @@ Shader "Custom/ShellExperimentalNoShadow" {
 				// compute shadow attenuation (1.0 = fully lit, 0.0 = fully shadowed)
 				 fixed shadow = SHADOW_ATTENUATION(frag);
 
-				//if (shadow > 0.99) return (1.0, 1.0, 1.0, 1.0);
-
 				// Put it all together
 				return float4(shadow * attenuation * _LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0);
+				 //return saturate(float4(shadow * attenuation * _LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0) + float4(unity_IndirectSpecColor.xyz * _ShellColor * halfDot * ambientOcclusion, 1.0));
 			}
 
 			ENDCG

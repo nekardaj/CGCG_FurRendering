@@ -7,6 +7,9 @@ public class Shell : MonoBehaviour
 {
     [SerializeField] private string _materialPath = "Materials/FurMaterial";
 
+    [Tooltip("If set to false, the object will not move on user input.")]
+    public bool AllowObjectMovement = true;
+
     [Header("Parameters")]
 
     [Range(1, 256)] public int shellCount = 16;
@@ -106,6 +109,12 @@ public class Shell : MonoBehaviour
 
     private void SetMovement()
     {
+        if (!AllowObjectMovement) 
+        {
+            Shader.SetGlobalVector(ShellDisplacementDir, Vector3.zero);
+            return;
+        }
+
         // TODO: take transform into account! (rotation)
         const float velocity = 1.0f;
 

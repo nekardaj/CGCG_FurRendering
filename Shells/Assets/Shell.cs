@@ -36,14 +36,15 @@ public class Shell : MonoBehaviour
 
     [Range(0.0f, 1.0f)] public float occlusionBias = 0.0f;
 
+    [SerializeField] private DisplacementDirectionProvider displacementDirectionProvider;
+
     private Material Material;
     private Mesh mesh { get; set; }
     private Material shellMaterial;
     private GameObject[] shells;
     private int shellsCapacity = 0;
 
-    private Vector3 displacementDirection = new Vector3(0, 0, 0);
-    private static readonly int ShellDisplacementDir = Shader.PropertyToID("_ShellDisplacementDir");
+    
 
     // TODO: We could be doing this via tesselation shaders somehow? Again a comparison in a report would be nice!
     void OnEnable()
@@ -51,6 +52,21 @@ public class Shell : MonoBehaviour
         SetMaterial();
         SetMesh();
         GenerateShells();
+    }
+
+    void Start()
+    {
+        if (displacementDirectionProvider == null)
+        {
+            if (GetComponentInParent<MovementController>() != null)
+            {
+                Debug.LogWarning("Found MovementController which is not bound. Did you forget to assign displacement provider?");
+            }
+            if (displacementDirectionProvider == null)
+            {
+                Debug.Log("No displacement direction provider found. Assuming movement is locked");
+            }
+        }
     }
 
     void OnDisable()
@@ -109,34 +125,18 @@ public class Shell : MonoBehaviour
 
     private void SetMovement()
     {
-        if (!AllowObjectMovement) 
+        if (!AllowObjectMovement || displacementDirectionProvider == null) 
         {
-            Shader.SetGlobalVector(ShellDisplacementDir, Vector3.zero);
+            for (int i = 0; i < shells.Length; i++)
+            {
+                shells[i].GetComponent<MeshRenderer>().material.SetVector("_ShellDisplacementDir", Vector4.zero);
+            }
             return;
         }
-
-        // TODO: take transform into account! (rotation)
-        const float velocity = 1.0f;
-
-        var direction = new Vector3(0, 0, 0)
+        for (int i = 0; i < shells.Length; i++)
         {
-            x = Convert.ToInt32(Input.GetKey(KeyCode.D)) - Convert.ToInt32(Input.GetKey(KeyCode.A)),
-            y = Convert.ToInt32(Input.GetKey(KeyCode.W)) - Convert.ToInt32(Input.GetKey(KeyCode.S)),
-            z = Convert.ToInt32(Input.GetKey(KeyCode.Q)) - Convert.ToInt32(Input.GetKey(KeyCode.E))
-        };
-
-        var currentPosition = transform.position;
-        direction.Normalize();
-        currentPosition += direction * (velocity * Time.deltaTime);
-        transform.position = currentPosition;
-        displacementDirection -= direction * (Time.deltaTime * 10.0f);
-        if (direction.Equals(Vector3.zero))
-        {
-            displacementDirection.y -= 10.0f * Time.deltaTime; // TODO: take transform into account
+            shells[i].GetComponent<MeshRenderer>().material.SetVector("_ShellDisplacementDir", displacementDirectionProvider.GetDisplacementDirection());
         }
-        displacementDirection.Normalize();
-
-        Shader.SetGlobalVector(ShellDisplacementDir, displacementDirection);
     }
 
     private void UpdateUniforms(int index)

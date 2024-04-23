@@ -20,6 +20,7 @@ Shader "Custom/ShellTexturing" {
 			// Unity built in graphics functions
 			#include "UnityPBSLighting.cginc"
 			#include "AutoLight.cginc"
+			#include "FastNoiseLite.hlsl"
 
 			#pragma multi_compile_fwdbase
 
@@ -141,12 +142,13 @@ Shader "Custom/ShellTexturing" {
 				float localDistanceFromCenter = length(localUV);
 
 				// Introduce length variance to the strands
-
+				fnl_state random_state = fnlCreateState(42);
+				random_state.noise_type = FNL_NOISE_VALUE;
 				// We use the newUV as a seed for determining the strand length
-				uint2 tid = newUV;
 				// use the hash function to generate a random number between 0, 1 based on the uvs
-
-				float random = lerp(_MinNormalizedLength, _MaxNormalizedLength, hash12(newUV));
+				float lerp_val = fnlGetNoise2D(random_state, (100 * newUV.x), (100 * newUV.y) ); // -1 to 1
+				lerp_val = lerp_val * 0.5 + 0.5; // 0 to 1
+				float random = lerp(_MinNormalizedLength, _MaxNormalizedLength, lerp_val);
 
 				// Normalized shell height
 				float height = (float)_ShellIndex / (float)_ShellCount;

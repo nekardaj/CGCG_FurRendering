@@ -117,16 +117,16 @@ Shader "Custom/ShellExperimentalNoShadow" {
 					g2f o;
 
 					// Extrude the shells based on normal, shell height, and length
-					input[j].vertexPos.xyz += input[j].normal * _TotalShellLength * shellHeight;
-
+					
+					o.pos.xyz = input[j].vertexPos.xyz + input[j].normal * _TotalShellLength * shellHeight;
 					o.normal = normalize(UnityObjectToWorldNormal(input[j].normal));
 
 					// Displace shells based on curvature and displacement strength
 					float k = pow(shellHeight, _Curvature);
-					input[j].vertexPos.xyz += _ShellDisplacementDir * k * _DisplacementStrength;
+					o.pos.xyz += _ShellDisplacementDir * k * _DisplacementStrength;
 
 					o.worldPos = mul(unity_ObjectToWorld, input[j].vertexPos).xyz;
-					o.pos = UnityObjectToClipPos(input[j].vertexPos);
+					o.pos = UnityObjectToClipPos(o.pos);
 					o.uv = input[j].uv;
 					o.shellIndex = height;
 

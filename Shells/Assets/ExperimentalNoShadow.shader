@@ -21,6 +21,7 @@ Shader "Custom/ShellExperimentalNoShadow" {
 		#pragma vertex vertex_shader
 		#pragma geometry geometry_shader
 		#pragma fragment fragment_shader
+		#pragma target 5.0
 
 
 		// The input struct of the vertex shader
@@ -99,11 +100,16 @@ Shader "Custom/ShellExperimentalNoShadow" {
 			o.normal = v.normal;
 			return o;
 		}
+		# define GEO_INSTANCES 16
+		# define SHELLS_PER_INSTANCE 16
 
 		// Geometry shader
-		[maxvertexcount(48)] // 3 vertices per triangle * 16 shells = 48 vertices max
-		void geometry_shader(triangle v2g input[3], inout TriangleStream<g2f> triStream) {
-			for (int height = 0; height < _ShellCount; height++) {
+		[instance(GEO_INSTANCES)] // 16 instances * 16 shells means we get 256 max shells as intended
+		[maxvertexcount(3 * SHELLS_PER_INSTANCE)] // 3 vertices per triangle * 16 shells = 48 vertices max
+		void geometry_shader(triangle v2g input[3], inout TriangleStream<g2f> triStream, uint InstanceID : SV_GSInstanceID) {
+			int upper_bound = min((InstanceID + 1) * SHELLS_PER_INSTANCE, _ShellCount);
+			// next multiple of shells per instance or shell count if it is smaller
+			for (int height = InstanceID * SHELLS_PER_INSTANCE; height < upper_bound; height++) {
 				float shellHeight = (float)height / (float)_ShellCount;
 				shellHeight = pow(shellHeight, _ShellDistanceAttenuation);
 
@@ -122,7 +128,7 @@ Shader "Custom/ShellExperimentalNoShadow" {
 					o.worldPos = mul(unity_ObjectToWorld, input[j].vertexPos).xyz;
 					o.pos = UnityObjectToClipPos(input[j].vertexPos);
 					o.uv = input[j].uv;
-					o.shellIndex = (float)height / (float)_ShellCount;
+					o.shellIndex = height;
 
 					TRANSFER_SHADOW(o)
 

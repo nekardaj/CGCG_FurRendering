@@ -84,6 +84,9 @@ Shader "Custom/ShellTexturing" {
 			// direction of the displacement; updated each frame
 			float3 _ShellDisplacementDir;
 
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
+
 			// hash function source: https://www.shadertoy.com/view/MdcfDj
 			float hash12(uint2 q)
 			{
@@ -117,7 +120,7 @@ Shader "Custom/ShellTexturing" {
 
 				frag.worldPos = mul(unity_ObjectToWorld, v.vertexPos);
 				frag.pos = UnityObjectToClipPos(v.vertexPos);
-				frag.uv = v.uv;
+				frag.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
 				TRANSFER_SHADOW(frag)
 
@@ -135,6 +138,7 @@ Shader "Custom/ShellTexturing" {
 				// = we split the space into many small spaces, one for each strand
 
 				// Make the uvs bigger -> we get more strands
+				fixed4 col = tex2D(_MainTex, frag.uv);
 				float2 newUV = frag.uv * _ShellDensity;
 				// Shift the local uvs to the center of the strand (-1 - 1 range)
 				float2 localUV = frac(newUV) * 2 - 1;
@@ -211,7 +215,7 @@ Shader "Custom/ShellTexturing" {
 
 				// Put it all together and include ambient light
 				//return float4(shadow * attenuation * _LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0);
-				return saturate(float4(shadow * attenuation * _LightColor0 * _ShellColor * halfDot * ambientOcclusion, 1.0) + float4(unity_IndirectSpecColor.xyz * _ShellColor * halfDot * ambientOcclusion, 1.0));
+				return saturate(float4(shadow * attenuation * col * halfDot * ambientOcclusion) + float4(unity_IndirectSpecColor.xyz * col * halfDot * ambientOcclusion, 1.0));
 			}
 
 			ENDCG

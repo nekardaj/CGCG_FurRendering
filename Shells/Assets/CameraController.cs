@@ -53,6 +53,16 @@ namespace UnityTemplateProjects
         CameraState m_TargetCameraState = new CameraState();
         CameraState m_InterpolatingCameraState = new CameraState();
 
+        // This can allow controlling both camera and moving object without overlapping
+        /// <summary>
+        /// In order: WSAD, up and down (Default will respect previous implementation)
+        /// </summary>
+        [SerializeField] private KeyCode[] m_MovementKeys = new KeyCode[] { KeyCode.W, KeyCode.S, KeyCode.A, KeyCode.D, KeyCode.E, KeyCode.Q };
+        /// <summary>
+        /// If true movement will be with respect to camera rotation
+        /// </summary>
+        [SerializeField] private bool UseRotation = true;
+
         [Header("Movement Settings")]
         [Tooltip("Exponential boost factor on translation, controllable by mouse wheel.")]
         public float boost = 3.5f;
@@ -72,6 +82,11 @@ namespace UnityTemplateProjects
 
         void OnEnable()
         {
+            if (m_MovementKeys.Length != 6)
+            {
+                Debug.LogError("Movement keys must be 6");
+                throw new System.Exception("Movement keys must be 6");
+            }
             m_TargetCameraState.SetFromTransform(transform);
             m_InterpolatingCameraState.SetFromTransform(transform);
         }
@@ -79,27 +94,68 @@ namespace UnityTemplateProjects
         Vector3 GetInputTranslationDirection()
         {
             Vector3 direction = new Vector3();
-            if (Input.GetKey(KeyCode.W))
+            var rotation = Quaternion.Euler(m_TargetCameraState.pitch,m_TargetCameraState.yaw, m_TargetCameraState.roll);
+            // extract the local right, forward, and up axes
+            
+            if (!UseRotation)
+            {
+                var forward = rotation * Vector3.forward;
+                var right = rotation * Vector3.right;
+                var up = rotation * Vector3.up;
+                Debug.Log("forward: " + forward + " right: " + right + " up: " + up);
+
+                if (Input.GetKey(m_MovementKeys[0]))
+                {
+                    direction += forward;
+                }
+
+                if (Input.GetKey(m_MovementKeys[1]))
+                {
+                    direction -= forward;
+                }
+
+                if (Input.GetKey(m_MovementKeys[2]))
+                {
+                    direction -= right;
+                }
+
+                if (Input.GetKey(m_MovementKeys[3]))
+                {
+                    direction += right;
+                }
+
+                if (Input.GetKey(m_MovementKeys[4]))
+                {
+                    direction -= up;
+                }
+
+                if (Input.GetKey(m_MovementKeys[5]))
+                {
+                    direction += up;
+                }
+                return direction;
+            }
+            if (Input.GetKey(m_MovementKeys[0]))
             {
                 direction += Vector3.forward;
             }
-            if (Input.GetKey(KeyCode.S))
+            if (Input.GetKey(m_MovementKeys[1]))
             {
                 direction += Vector3.back;
             }
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetKey(m_MovementKeys[2]))
             {
                 direction += Vector3.left;
             }
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(m_MovementKeys[3]))
             {
                 direction += Vector3.right;
             }
-            if (Input.GetKey(KeyCode.Q))
+            if (Input.GetKey(m_MovementKeys[4]))
             {
                 direction += Vector3.down;
             }
-            if (Input.GetKey(KeyCode.E))
+            if (Input.GetKey(m_MovementKeys[5]))
             {
                 direction += Vector3.up;
             }

@@ -19,7 +19,10 @@ public class MovementController : DisplacementDirectionProvider
     [SerializeField, Range(0.1f, 50f)] private float Acceleration = 5f;
     [SerializeField, Range(0.1f, 100f)] private float MaxSpeed = 6f;
     Vector3 direction;
-    private static readonly int ShellDisplacementDir = Shader.PropertyToID("_ShellDisplacementDir");
+
+    /// In order: WSAD, up and down (Default will respect previous implementation)
+    /// </summary>
+    [SerializeField] private KeyCode[] m_MovementKeys = new KeyCode[] { KeyCode.W, KeyCode.S, KeyCode.A, KeyCode.D, KeyCode.E, KeyCode.Q };
 
     // Start is called before the first frame update
     void Start()
@@ -34,27 +37,27 @@ public class MovementController : DisplacementDirectionProvider
     Vector3 GetInputTranslationDirection()
     {
         Vector3 direction = new Vector3();
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(m_MovementKeys[0]))
         {
             direction += Vector3.forward;
         }
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(m_MovementKeys[1]))
         {
             direction += Vector3.back;
         }
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(m_MovementKeys[2]))
         {
             direction += Vector3.left;
         }
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(m_MovementKeys[3]))
         {
             direction += Vector3.right;
         }
-        if (Input.GetKey(KeyCode.Q))
+        if (Input.GetKey(m_MovementKeys[4]))
         {
             direction += Vector3.down;
         }
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKey(m_MovementKeys[5]))
         {
             direction += Vector3.up;
         }

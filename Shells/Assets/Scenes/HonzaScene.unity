@@ -383,6 +383,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Acceleration: 5
   MaxSpeed: 6
+  m_MovementKeys: 770000007300000061000000640000006500000071000000
 --- !u!54 &53827227
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -859,7 +860,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &911930307
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1143,13 +1144,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1218760875}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.30800414, y: -0.22634907, z: 0.0757708, w: 0.9209552}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.21, y: 3.32, z: -5.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 36.986, y: -27.613, z: 0.009}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1218760879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1157,11 +1158,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1218760875}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d13497d8eee075b43a474ca52848c318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_MovementKeys: 770000007300000061000000640000007100000065000000
+  UseRotation: 1
   boost: 3.5
   positionLerpTime: 0.2
   mouseSensitivityCurve:
@@ -1331,9 +1334,37 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 339439197526967594, guid: 1faf5d6cf63ec2c43b2ab56371574986, type: 3}
+      propertyPath: displacementStrength
+      value: 0.45
+      objectReference: {fileID: 0}
     - target: {fileID: 3686571002424460796, guid: 1faf5d6cf63ec2c43b2ab56371574986, type: 3}
       propertyPath: m_Name
       value: FurryMovingObject
+      objectReference: {fileID: 0}
+    - target: {fileID: 5943285581779076877, guid: 1faf5d6cf63ec2c43b2ab56371574986, type: 3}
+      propertyPath: m_MovementKeys.Array.data[0]
+      value: 273
+      objectReference: {fileID: 0}
+    - target: {fileID: 5943285581779076877, guid: 1faf5d6cf63ec2c43b2ab56371574986, type: 3}
+      propertyPath: m_MovementKeys.Array.data[1]
+      value: 274
+      objectReference: {fileID: 0}
+    - target: {fileID: 5943285581779076877, guid: 1faf5d6cf63ec2c43b2ab56371574986, type: 3}
+      propertyPath: m_MovementKeys.Array.data[2]
+      value: 276
+      objectReference: {fileID: 0}
+    - target: {fileID: 5943285581779076877, guid: 1faf5d6cf63ec2c43b2ab56371574986, type: 3}
+      propertyPath: m_MovementKeys.Array.data[3]
+      value: 275
+      objectReference: {fileID: 0}
+    - target: {fileID: 5943285581779076877, guid: 1faf5d6cf63ec2c43b2ab56371574986, type: 3}
+      propertyPath: m_MovementKeys.Array.data[4]
+      value: 258
+      objectReference: {fileID: 0}
+    - target: {fileID: 5943285581779076877, guid: 1faf5d6cf63ec2c43b2ab56371574986, type: 3}
+      propertyPath: m_MovementKeys.Array.data[5]
+      value: 264
       objectReference: {fileID: 0}
     - target: {fileID: 6736953684704028461, guid: 1faf5d6cf63ec2c43b2ab56371574986, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1510,6 +1541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Acceleration: 5
   MaxSpeed: 6
+  m_MovementKeys: 770000007300000061000000640000006500000071000000
 --- !u!114 &1670962149
 MonoBehaviour:
   m_ObjectHideFlags: 0

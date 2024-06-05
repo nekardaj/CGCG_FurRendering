@@ -168,7 +168,9 @@ MonoBehaviour:
   shellColor: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 1}
   occlusionAttenuation: 1.5
   occlusionBias: 0.1
+  texture: {fileID: 0}
   displacementDirectionProvider: {fileID: 0}
+  skinnedMeshRenderer: {fileID: 0}
 --- !u!23 &6967156
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -294,7 +296,9 @@ MonoBehaviour:
   shellColor: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 1}
   occlusionAttenuation: 1.5
   occlusionBias: 0.1
+  texture: {fileID: 0}
   displacementDirectionProvider: {fileID: 0}
+  skinnedMeshRenderer: {fileID: 0}
 --- !u!23 &256546671
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -391,7 +395,9 @@ MonoBehaviour:
   shellColor: {r: 0.14686084, g: 1, b: 0, a: 1}
   occlusionAttenuation: 1.5
   occlusionBias: 0.125
+  texture: {fileID: 0}
   displacementDirectionProvider: {fileID: 482277305}
+  skinnedMeshRenderer: {fileID: 0}
 --- !u!23 &482277302
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -769,6 +775,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d13497d8eee075b43a474ca52848c318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_MovementKeys: 770000007300000061000000640000006500000071000000
+  UseRotation: 1
   boost: 3.5
   positionLerpTime: 0.2
   mouseSensitivityCurve:

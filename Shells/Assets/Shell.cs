@@ -40,7 +40,9 @@ public class Shell : MonoBehaviour
 
     [SerializeField] private DisplacementDirectionProvider displacementDirectionProvider;
 
-    public SkinnedMeshRenderer skinnedMeshRenderer;
+    public MeshRenderer skinnedMeshRenderer;
+    public MeshRenderer meshRenderer;
+    bool isSkinnedMesh = false;
 
     private Material Material;
     private Mesh mesh { get; set; }
@@ -53,6 +55,7 @@ public class Shell : MonoBehaviour
     // TODO: We could be doing this via tesselation shaders somehow? Again a comparison in a report would be nice!
     void OnEnable()
     {
+        isSkinnedMesh = GetComponent<SkinnedMeshRenderer>() != null;
         SetMaterial();
         SetMesh();
         GenerateShells();
@@ -71,6 +74,14 @@ public class Shell : MonoBehaviour
                 Debug.Log("No displacement direction provider found. Assuming movement is locked");
             }
         }
+        // if there is no texture create flat color texture
+        if (texture == null)
+        {
+            texture = new Texture2D(1, 1);
+            texture.SetPixel(0, 0, shellColor);
+            texture.Apply();
+        }
+        
     }
 
     void OnDisable()
@@ -101,12 +112,26 @@ public class Shell : MonoBehaviour
     private void SetMaterial()
     {
         shellMaterial = Resources.Load<Material>(_materialPath);
-        GetComponent<SkinnedMeshRenderer>().material = shellMaterial;
+        if (isSkinnedMesh)
+        {
+            GetComponent<SkinnedMeshRenderer>().material = shellMaterial;
+        }
+        else
+        {
+            GetComponent<MeshRenderer>().material = shellMaterial;
+        }
     }
 
     private void SetMesh()
     {
-        mesh = GetComponent<SkinnedMeshRenderer>().sharedMesh;
+        if(isSkinnedMesh)
+        {
+            mesh = GetComponent<SkinnedMeshRenderer>().sharedMesh;
+        }
+        else
+        {
+            mesh = GetComponent<MeshFilter>().mesh;
+        }
     }
 
     private void GenerateShells()
@@ -160,6 +185,12 @@ public class Shell : MonoBehaviour
         shells[index].GetComponent<MeshRenderer>().material.SetFloat("_MinNormalizedLength", noiseMin);
         shells[index].GetComponent<MeshRenderer>().material.SetFloat("_MinNormalizedLength", noiseMax);
         shells[index].GetComponent<MeshRenderer>().material.SetVector("_ShellColor", shellColor);
+        if (texture.height == 1 && texture.width == 1) // phony texture
+        // changing texture every frame is not ideal, but this is 1x1 texture, so it should be fine
+        {
+            texture.SetPixel(0, 0, shellColor);
+            texture.Apply();
+        }
         shells[index].GetComponent<MeshRenderer>().material.SetTexture("_MainTex", texture);
     }
 

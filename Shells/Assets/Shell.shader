@@ -184,10 +184,11 @@ Shader "Custom/ShellTexturing" {
 				}
 				else // point or spot light
 				{
-					float3 vertexToLightSource =
-						_WorldSpaceLightPos0.xyz - frag.worldPos.xyz;
+					//float3 vertexToLightSource = _WorldSpaceLightPos0.xyz - frag.worldPos.xyz;
+					float3 vertexToLightSource = frag.worldPos.xyz - _WorldSpaceLightPos0.xyz;
 					float distance = length(vertexToLightSource);
-					attenuation = 1.0 / distance; // linear attenuation 
+					//attenuation = 1.0 / distance; // linear attenuation 
+					attenuation = 1.0 / (distance * distance); // spherical attenuation
 					lightDirection = normalize(vertexToLightSource);
 				}
 

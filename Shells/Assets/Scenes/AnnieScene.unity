@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7e1f48ed03b04c4dba2b9d3d63eee53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _materialPath: Materials/FurMaterial
+  _materialPath: Materials/ExpNoShadow
   AllowObjectMovement: 1
   shellCount: 16
   shellLength: 0.15
@@ -233,6 +233,7 @@ MonoBehaviour:
   texture: {fileID: 0}
   displacementDirectionProvider: {fileID: 0}
   skinnedMeshRenderer: {fileID: 0}
+  meshRenderer: {fileID: 0}
 --- !u!1 &911930306
 GameObject:
   m_ObjectHideFlags: 0
@@ -538,6 +539,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d13497d8eee075b43a474ca52848c318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_MovementKeys: 770000007300000061000000640000006500000071000000
+  UseRotation: 1
   boost: 3.5
   positionLerpTime: 0.2
   mouseSensitivityCurve:
@@ -701,6 +704,7 @@ MonoBehaviour:
   texture: {fileID: 0}
   displacementDirectionProvider: {fileID: 0}
   skinnedMeshRenderer: {fileID: 0}
+  meshRenderer: {fileID: 0}
 --- !u!1 &1951006888
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,7 +724,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1951006889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -750,6 +754,7 @@ MonoBehaviour:
   texture: {fileID: 2800000, guid: 9242856ea36674c45adebee7b749379c, type: 3}
   displacementDirectionProvider: {fileID: 0}
   skinnedMeshRenderer: {fileID: 0}
+  meshRenderer: {fileID: 0}
 --- !u!135 &1951006890
 SphereCollider:
   m_ObjectHideFlags: 0
